@@ -138,7 +138,6 @@ class PipelineProgramTest extends AnyFlatSpec with ChiselScalatestTester {
         assert(cycles > 0, s"${cfg.name}: Cycle count should be > 0, got $cycles")
       }
     }
-
     it should "handle machine-mode traps" in {
       runProgram("irqtrap.asmbin", cfg) { c =>
         c.clock.setTimeout(0)
@@ -170,5 +169,95 @@ class PipelineProgramTest extends AnyFlatSpec with ChiselScalatestTester {
         c.io.mem_debug_read_data.expect(0x2022L.U)
       }
     }
+    
+    it should "correctly run Assignment 2 (FastRsqrt Tests)" in {
+
+      val expectedAnswers = Seq(
+        65536,  
+        46341,  
+        37836,  
+        32768,  
+        20724, 
+        6553,   
+        2072,  
+        655,    
+        1       
+      )
+
+      runProgram("fast_rsqrt.asmbin", cfg) { c =>
+ 
+        c.clock.setTimeout(0)
+        
+        for (_ <- 0 until 500) {
+          c.clock.step(1000)
+          c.io.mem_debug_read_address.poke(0.U) 
+        }
+
+        for ((expected, i) <- expectedAnswers.zipWithIndex) {
+          val addr = 0x100 + i * 4
+          
+          c.io.mem_debug_read_address.poke(addr.U)
+          c.clock.step()
+          
+          c.io.mem_debug_read_data.expect(expected.U, s"Failed at index $i")
+        }
+      }
+    }
+    
+    it should "correctly run Assignment 2 (Leetcode_260 Tests)" in {
+    val expectedAnswers = Seq(
+      0L, 1L,                     
+      100L, 99L,                  
+      0xfffffffaL, 0xfffffffbL    
+    )
+
+    test(new TestTopModule("Leetcode_260.asmbin", 0)).withAnnotations(TestAnnotations.annos) { c =>
+      c.clock.setTimeout(0)
+      
+      for (_ <- 0 until 200) {
+        c.clock.step(1000)
+        c.io.mem_debug_read_address.poke(0.U) 
+      }
+
+      for ((expected, i) <- expectedAnswers.zipWithIndex) {
+        val addr = 0x2000 + i * 4
+        c.io.mem_debug_read_address.poke(addr.U)
+        c.clock.step()
+        c.io.mem_debug_read_data.expect(expected.U, s"Failed at index $i")
+      }
+    }
+  }
+  
+    
+    it should "correctly run Assignment 2 (BF16 implementation Tests)" in {
+      val expectedAnswers = Seq(
+        0x4000,  
+        0x3F80,  
+        0x40C0,  
+        0x4040,  
+        1, 
+        1, 
+        1  
+      )
+
+      runProgram("bf16_implementation.asmbin", cfg) { c =>
+        c.clock.setTimeout(0)
+        
+        for (_ <- 0 until 500) {
+          c.clock.step(1000)
+          c.io.mem_debug_read_address.poke(0.U) 
+        }
+
+        for ((expected, i) <- expectedAnswers.zipWithIndex) {
+          val addr = 0x2000 + i * 4
+          
+          c.io.mem_debug_read_address.poke(addr.U)
+          c.clock.step()
+          
+          c.io.mem_debug_read_data.expect(expected.U, s"Failed at index $i")
+        }
+      }
+    }
   }
 }
+

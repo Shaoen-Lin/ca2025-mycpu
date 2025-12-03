@@ -114,3 +114,78 @@ class ByteAccessTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+/*
+class FastRsqrtTest extends AnyFlatSpec with ChiselScalatestTester {
+  behavior.of("Single Cycle CPU - Assignment 2 FastRsqrt Tests")
+  
+  it should "correctly handle Assignment 2 problem(FastRsqrt Tests)" in {
+    val expectedAnswers = Seq(
+      65536,  // Input: 1
+      46341,  // Input: 2
+      37836,  // Input: 3 (約 0.577...)
+      32768,  // Input: 4
+      20724,  // Input: 10
+      6553,   // Input: 100
+      2072,   // Input: 1000
+      655,    // Input: 10000
+      1       // Input: 4294967295
+    )
+
+    test(new TestTopModule("fast_rsqrt.asmbin")).withAnnotations(TestAnnotations.annos) { c =>
+     c.clock.setTimeout(0)
+    
+      for (_ <- 0 until 200) {
+        c.clock.step(1000)
+        c.io.mem_debug_read_address.poke(0.U) 
+      }
+
+      for ((expected, i) <- expectedAnswers.zipWithIndex) {
+
+        val addr = 0x100 + i * 4
+        
+        c.io.mem_debug_read_address.poke(addr.U)
+        c.clock.step() 
+
+        c.io.mem_debug_read_data.expect(expected.U, s"Failed at index $i")
+      }
+    }
+  }
+}
+*/
+/*
+class BF16Test extends AnyFlatSpec with ChiselScalatestTester {
+  behavior.of("Single Cycle CPU - Assignment 2 BF16 Tests")
+
+  it should "correctly run Assignment 2 (BF16 implementation Tests)" in {
+    val expectedAnswers = Seq(
+      0x4000,  // Input: 1
+      0x3F80,  // Input: 2
+      0x40C0,  // Input: 3 
+      0x4040,  // Input: 4
+      1,       // Zero
+      1,       // NaN 
+      1        // Infinity
+    )
+
+    test(new TestTopModule("bf16_implementation.asmbin")).withAnnotations(TestAnnotations.annos) { c =>
+
+      c.clock.setTimeout(0)
+
+      for (_ <- 0 until 500) {
+        c.clock.step(1000)
+        c.io.mem_debug_read_address.poke(0.U) 
+      }
+
+      for ((expected, i) <- expectedAnswers.zipWithIndex) {
+        val addr = 0x2000 + i * 4
+        
+        c.io.mem_debug_read_address.poke(addr.U)
+        c.clock.step()
+        
+        c.io.mem_debug_read_data.expect(expected.U, s"Failed at index $i")
+      }
+    }
+  }
+ }
+*/
+
