@@ -211,7 +211,7 @@ class PipelineProgramTest extends AnyFlatSpec with ChiselScalatestTester {
       0xfffffffaL, 0xfffffffbL    
     )
 
-    test(new TestTopModule("Leetcode_260.asmbin", 0)).withAnnotations(TestAnnotations.annos) { c =>
+    test(new TestTopModule("Leetcode_260.asmbin", cfg)).withAnnotations(TestAnnotations.annos) { c =>
       c.clock.setTimeout(0)
       
       for (_ <- 0 until 200) {
